@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>uReport</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="css/uReport.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <h1>Categories</h1>
+    </div>
+    <div class="row" id="categories-wrapper">
+    </div>
+    <div class="row">
+        <div id="test-list">
+
+        </div>
+    </div>
+    <div class="row">
+        <div id="test-form">
+
+        </div>
+    </div>
+</div>
+<script type="text/template" id="multipleValueListTemplate">
+    <div class="form-group">
+        <label for="<%=code%>"><%=description%></label>
+        <!--<select class="custom-select" id="<%=code%>" name="<%=code%>" multiple <%=required%>>-->
+        <!--<option value="" disabled selected>Select your option</option>-->
+        <% _.each(values,function(value,key,arr) {
+            var unique = value.name.replace(/\s/g, '');
+        %>
+        <!--<option value="<%=value.key%>"><%=value.name%></option>-->
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="<%=value.key%>" name="attribute[<%=code%>][]" id="<%=unique%>">
+            <label class="form-check-label" for="<%=unique%>">
+                <%=value.name%>
+            </label>
+        </div>
+        <% }); %>
+        <!--</select>-->
+    </div>
+</script>
+<script type="text/template" id="singleValueListTemplate">
+    <div class="form-group">
+        <label for="<%=code%>"><%=description%></label>
+        <select class="custom-select" id="<%=code%>" name="attribute[<%=code%>]" <%=required%>>
+            <option value="" disabled selected>Select your option</option>
+            <% _.each(values,function(value,key,arr) { %>
+                <option value="<%=value.key%>"><%=value.name%></option>
+            <% }); %>
+        </select>
+    </div>
+</script>
+<script type="text/template" id="stringTemplate">
+    <div class="form-group">
+        <label for="<%=code%>"><%=description%></label>
+        <input type="text" class="form-control" id="<%=code%>" name="attribute[<%=code%>]" aria-describedby="emailHelp" <%=required%>>
+        <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
+    </div>
+</script>
+<script type="text/template" id="numberTemplate">
+    <div class="form-group">
+        <label for="<%=code%>"><%=description%></label>
+        <input type="number" class="form-control" id="<%=code%>" name="attribute[<%=code%>]" aria-describedby="emailHelp" <%=required%>>
+        <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
+    </div>
+</script>
+<script type="text/template" id="datetimeTemplate">
+    <div class="form-group">
+        <label for="<%=code%>"><%=description%></label>
+        <input type="datetime" class="form-control" id="<%=code%>" name="attribute[<%=code%>]" aria-describedby="emailHelp" <%=required%>>
+        <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
+    </div>
+</script>
+
+<script type="text/template" id="textTemplate">
+    <div class="form-group">
+        <label for="<%=code%>"><%=description%></label>
+        <textarea class="form-control" id="<%=code%>" name="attribute[<%=code%>]" rows="3" <%=required%>></textarea>
+        <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
+    </div>
+</script>
+<script type="text/template" id="categoryTemplate">
+    <div class="col-12 col-sm-4 col-lg-4 category" value="<%= key %>">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><%= key %></h5>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="formTemplate">
+    <form id="request">
+        <h2><%=service_name%></h2>
+        <p><%=description%></p>
+        <input type="hidden" name="service_code" value="<%=service_code%>">
+        <input type="hidden" name="address_string" id="address_string" value="Test address">
+        <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" class="form-control" id="first_name" name="first_name" aria-describedby="emailHelp" placeholder="First Name">
+            <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
+        </div>
+        <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" class="form-control" id="last_name"  name="last_name" aria-describedby="emailHelp" placeholder="Last Name">
+            <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="text" class="form-control" id="phone" name="phone" aria-describedby="emailHelp" placeholder="Phone Number">
+            <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Email">
+            <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+        <div id="details">
+            <%=details%>
+        </div>
+        <div class="form-group">
+            <label for="file">Example file input</label>
+            <input type="file" class="form-control-file" id="file" name="file">
+        </div>
+        <button type="button" id="formSubmit" class="btn btn-primary">Submit</button>
+    </form>
+</script>
+<script src="lib/jquery/jquery-3.1.1.min.js"></script>
+<script src="lib/underscore-min.js"></script>
+<script src="lib/jquery.blockUI.js"></script>
+<script src="lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap/js/popper.min.js"></script>
+<script src="lib/jquery-inline-popup.js"></script>
+<script src="js/uReport.js"></script>
+</body>
+</html>

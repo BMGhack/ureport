@@ -1,0 +1,43 @@
+@import "../lib/bootstrap/scss/bootstrap";
+$primary-color:$primary;
+
+.blockquote-danger {
+  padding: 0.5rem 1rem;
+  border-left: .25rem solid $danger;
+}
+
+.category {
+  margin-bottom: 10px;
+  &:hover {
+    cursor: pointer;
+    .card {
+      background-color: $primary-color;
+      color: white;
+    }
+  }
+  .card {
+    height: 270px;
+    background-color: #dcdcdc;
+
+  }
+}
+.service {
+  &:hover {
+    background-color: $primary-color;
+    color: white;
+  }
+}
+
+.category .active {
+  .card {
+    background-color: $primary-color !important;
+    color: white;
+  }
+}
+
+
+.service {
+  &:hover {
+    cursor: pointer;
+  }
+}
