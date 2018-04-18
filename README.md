@@ -19,21 +19,18 @@ ureport
     └───uReport.css
 
 ```
-### index.html 
+#### index.html 
 - Loads all the categories & services dynamically on pageload through AJAX
 - Similarly on click of each service the service definitions are dynmaically loaded using underscore.js templates
 - Templates can be found within script tags in index.html
-### api.php
+#### api.php
 - has endpoints such as loadServices, getServiceDefinition & postRequest
-
-### JS
+#### JS
 - uReport.js has the logic for rendering & posting forms
-
-### CSS 
+#### CSS 
 - uReport.scss - has the entire bootstrap 4 import within
 - uReport.css is generated from uReport.scss 
-
-### lib
+#### lib
 - Has third party libraries
 
 ## Dependency
