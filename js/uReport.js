@@ -5,10 +5,11 @@
  * Used Bootstrap 4, Underscore JS, Jquery, Block UI
  */
 
-url ="/uReport/api.php";
+url ="./api.php";
 /**
  * Templates are on the index.html as text/scripts
  */
+var formTemplate = _.template($('#formTemplate').html());
 var stringTemplate = _.template($('#stringTemplate').html());
 var numberTemplate = _.template($('#numberTemplate').html());
 var datetimeTemplate = _.template($('#datetimeTemplate').html());
@@ -125,84 +126,99 @@ function loadMap(position) {
 }
 
 /**
- * Main Function
+ * Based on the Service - service definitions is pulled from the open311 and rendered using template
+ * @param event
+ */
+function renderServiceDef(event) {
+    var obj = JSON.parse(decodeURIComponent($(event.target).attr('data')));
+    $.get(
+        url+'?type=getServiceDefinition&service_code='+obj.service_code,
+        function(servicesResponse) {
+            console.log(servicesResponse);
+            var services = JSON.parse(servicesResponse);
+
+            var details = [];
+            for(var i = 0;i<services.attributes.length;i++) {
+                details.push(renderServiceInput(services.attributes[i]));
+            }
+            $('.service').removeClass('active');
+            $(event.target).addClass('active');
+            $('.inlinepopup_content').find('.form-wrapper').empty();
+            $('.inlinepopup_content').find('.form-wrapper').append(formTemplate({service_code:obj.service_code,service_name:obj.service_name,description:obj.description,details:details.join("")}));
+            if (navigator.geolocation) {
+                console.log('Just');
+                navigator.geolocation.getCurrentPosition(loadMap,loadMap({coords:{latitude:39.14,longitude:-86.5}}));
+            } else {
+                loadMap({coords:{latitude:39.1,longitude:-86.4}});
+            }
+            $('html, body').animate({
+                scrollTop: $("#request").offset().top
+            }, 1000);
+
+        }
+    );
+}
+
+/**
+ * Pulls the address from Google maps using lat & long
+ */
+function getReverseGeoLoc() {
+    var geocoder = new google.maps.Geocoder;
+    $('#lat').val(marker.getPosition().lat());
+    $('#long').val(marker.getPosition().lng());
+    var latlng = {lat: parseFloat(marker.getPosition().lat()), lng: parseFloat(marker.getPosition().lng())};
+    console.log(latlng);
+    geocoder.geocode({'location': latlng}, function(results, status) {
+        if (status === 'OK') {
+            // console.log(results[0].formatted_address);
+            $('#address_string').val(results[0].formatted_address);
+        }
+    });
+}
+
+/**
+ * Post the request
+ */
+function formSubmit() {
+    $('.inlinepopup').block({message:'Please wait <i class="fas fa-spinner fa-spin"></i>',css:{border:'none'}});
+    $('html, body').animate({
+        scrollTop: $("#request").offset().top
+    }, 1000);
+
+    $.post( url+'?type=postRequest', $('form#request').serialize(), function(data) {
+            var respose = JSON.parse(data)[0];
+            console.log(respose);
+            var message = "Your report regarding <strong>"+respose.service_name+"</strong> has been submitted successfully. Please have the ticket number <strong>"+respose.service_request_id+ "</strong> for follow-up."
+            $("#request").slideUp(2000, function () {
+                $('.inlinepopup_content').find('.form-wrapper').empty();
+                $('.inlinepopup_content').find('.form-wrapper').append('<div class="alert alert-success" role="alert">'+message+'</div>');
+                $('.inlinepopup').unblock();
+            });
+
+        }
+    );
+}
+
+/**
+ * Clears and closes the form
+ */
+function closeForm() {
+    $('html, body').animate({
+        scrollTop: $("#request").offset().top - 150
+    }, 1000);
+    $("#request").slideUp('slow',function () {
+        $('.inlinepopup_content').find('.form-wrapper').empty();
+        $('.inlinepopup_content').find('.form-wrapper').append('<p>Select a report to send to the City for action.</p>');
+    });
+}
+/**
+ * Main Function with bindings and initializations
  */
 $(document).ready(function(){
-    var groups = loadServices();
-    var formTemplate = _.template($('#formTemplate').html());
-
-    $('.container').on("click", "#map-button", function(){
-        var geocoder = new google.maps.Geocoder;
-        $('#lat').val(marker.getPosition().lat());
-        $('#long').val(marker.getPosition().lng());
-        var latlng = {lat: parseFloat(marker.getPosition().lat()), lng: parseFloat(marker.getPosition().lng())};
-        console.log(latlng);
-        geocoder.geocode({'location': latlng}, function(results, status) {
-            if (status === 'OK') {
-                // console.log(results[0].formatted_address);
-                $('#address_string').val(results[0].formatted_address);
-            }
-        });
-    });
-    $('.container').on("click", "li.service", function(event){
-
-        var obj = JSON.parse(decodeURIComponent($(this).attr('data')));
-        $.get(
-            url+'?type=getServiceDefinition&service_code='+obj.service_code,
-            function(servicesResponse) {
-                console.log(servicesResponse);
-                var services = JSON.parse(servicesResponse);
-
-                var details = [];
-                for(var i = 0;i<services.attributes.length;i++) {
-                    details.push(renderServiceInput(services.attributes[i]));
-                }
-                $('.service').removeClass('active');
-                $(event.target).addClass('active');
-                $('.inlinepopup_content').find('.form-wrapper').empty();
-                $('.inlinepopup_content').find('.form-wrapper').append(formTemplate({service_code:obj.service_code,service_name:obj.service_name,description:obj.description,details:details.join("")}));
-                if (navigator.geolocation) {
-                    console.log('Just');
-                    navigator.geolocation.getCurrentPosition(loadMap,loadMap({coords:{latitude:39.14,longitude:-86.5}}));
-                } else {
-                    loadMap({coords:{latitude:39.1,longitude:-86.4}});
-                }
-                $('html, body').animate({
-                    scrollTop: $("#request").offset().top
-                }, 1000);
-
-            }
-        );
-    });
-
-    $('.container').on("click", "#formClose", function(){
-        $('html, body').animate({
-            scrollTop: $("#request").offset().top - 150
-        }, 1000);
-        $("#request").slideUp('slow',function () {
-            $('.inlinepopup_content').find('.form-wrapper').empty();
-            $('.inlinepopup_content').find('.form-wrapper').append('<p>Select a report to send to the City for action.</p>');
-        });
-    });
-    $('.container').on("click", "#formSubmit", function(){
-        console.log('Submit Form');
-
-        $('.inlinepopup').block({message:'Please wait <i class="fas fa-spinner fa-spin"></i>',css:{border:'none'}});
-        $('html, body').animate({
-            scrollTop: $("#request").offset().top
-        }, 1000);
-
-        $.post( url+'?type=postRequest', $('form#request').serialize(), function(data) {
-                var respose = JSON.parse(data)[0];
-                console.log(respose);
-                var message = "Your report regarding <strong>"+respose.service_name+"</strong> has been submitted successfully. Please have the ticket number <strong>"+respose.service_request_id+ "</strong> for follow-up."
-                $("#request").slideUp(2000, function () {
-                    $('.inlinepopup_content').find('.form-wrapper').empty();
-                    $('.inlinepopup_content').find('.form-wrapper').append('<div class="alert alert-success" role="alert">'+message+'</div>');
-                    $('.inlinepopup').unblock();
-                });
-
-            }
-        );
-    });
+    loadServices();
+    // All actions are binded to the Container
+    $('.container').on("click", "#map-button",getReverseGeoLoc);
+    $('.container').on("click", "li.service", renderServiceDef);
+    $('.container').on("click", "#formClose", closeForm);
+    $('.container').on("click", "#formSubmit",formSubmit);
 });
