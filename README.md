@@ -1,5 +1,7 @@
 # uReport
 Link: [uReport](http://ella.ils.indiana.edu/~jeffravi/uReport/)
+- Primarily used HTML & Javascript. PHP is used only for forwarding open311.
+- Focused more on the usability & responsive design.
 
 ## Directory
 ```
