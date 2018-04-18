@@ -3,6 +3,9 @@ Link: [uReport](http://ella.ils.indiana.edu/~jeffravi/uReport/)
 - Primarily used HTML & Javascript. PHP is used only for forwarding open311.
 - Focused more on the usability & responsive design.
 
+## Issues
+- Auto Refreshing of layout has been disable. Currently, if the page is manually resized after pageload - popup is not placed on the right location.
+
 ## Directory
 ```
 ureport
@@ -51,5 +54,4 @@ ureport
     - Google Map API
     - blockUI - Can be replaced with JQuery/Plain Javascript
     
-## Issues
-- Auto Refreshing of layout has been disable 
+ 
