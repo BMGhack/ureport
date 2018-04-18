@@ -50,3 +50,6 @@ ureport
     - Bootstrap 4 - For responsive layout
     - Google Map API
     - blockUI - Can be replaced with JQuery/Plain Javascript
+    
+## Issues
+- Auto Refreshing of layout has been disable 

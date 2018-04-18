@@ -19,9 +19,15 @@ $primary-color:$primary;
     transition: all 0.5s ease;
     height: 270px;
     background-color: #dcdcdc;
-
   }
 }
+.category.active {
+  .card {
+    background-color: $primary-color !important;
+    color: white;
+  }
+}
+
 .service {
   &:hover {
     background-color: $primary-color;
@@ -29,12 +35,7 @@ $primary-color:$primary;
   }
 }
 
-.category .active {
-  .card {
-    background-color: $primary-color !important;
-    color: white;
-  }
-}
+
 
 
 .service {

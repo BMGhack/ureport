@@ -6506,12 +6506,12 @@ a.text-dark:hover, a.text-dark:focus {
     height: 270px;
     background-color: #dcdcdc; }
 
-.service:hover {
-  background-color: #007bff;
+.category.active .card {
+  background-color: #007bff !important;
   color: white; }
 
-.category .active .card {
-  background-color: #007bff !important;
+.service:hover {
+  background-color: #007bff;
   color: white; }
 
 .service:hover {
